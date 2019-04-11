@@ -11,9 +11,9 @@ docker-compose up -d
 ```
 #### load kibana objects
 
-Open in browser: [http://0.0.0.0:5601/app/kibana#/home/tutorial/apm?_g=(refreshInterval:(pause:!t,value:0),time:(from:now-15m,mode:quick,to:now))&_a=](http://0.0.0.0:5601/app/kibana#/home/tutorial/apm?_g=(refreshInterval:(pause:!t,value:0),time:(from:now-15m,mode:quick,to:now))&_a=)
+* Open in browser: [http://0.0.0.0:5601/app/kibana#/home/tutorial/apm?_g=(refreshInterval:(pause:!t,value:0),time:(from:now-15m,mode:quick,to:now))&_a=](http://0.0.0.0:5601/app/kibana#/home/tutorial/apm?_g=(refreshInterval:(pause:!t,value:0),time:(from:now-15m,mode:quick,to:now))&_a=)
 
-Click "Load Kibana objects":  load index pattern, visualizations, and pre-defined dashboards. An index pattern is required for some 
+* Click "Load Kibana objects"
 #### Launch APM 
 Click "Launch APM" Or open [http://0.0.0.0:5601/app/apm](http://0.0.0.0:5601/app/apm)
 
