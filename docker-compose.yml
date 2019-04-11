@@ -1,0 +1,70 @@
+version: "2.2"
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.7.1
+    container_name: es
+    environment:
+      - "cluster.name=apm-demo"
+      - "http.host=0.0.0.0"
+      - "transport.host=127.0.0.1"
+      - "discovery.type=single-node"
+    ports:
+      - 9200:9200
+    networks:
+      - apm-demo
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9200']
+
+  apm-server:
+    image: docker.elastic.co/apm/apm-server:6.7.1
+    container_name: apm-server
+    ports:
+      - 8200:8200
+    networks:
+      - apm-demo
+    volumes:
+      - "./apm/apm-server.yml:/usr/share/apm-server/apm-server.yml"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8200']
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.7.1
+    container_name: kibana
+    ports:
+      - 5601:5601
+    networks:
+      - apm-demo
+    volumes:
+      - "./apm/kibana.yml:/usr/share/kibana/config/kibana.yml"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+  go-server:
+    build: ./go-gin/
+    container_name: go-server
+    environment:
+      - "ELASTIC_APM_SERVICE_NAME=apm-demo-go-gin"
+      - "ELASTIC_APM_SERVER_URL=http://apm-server:8200"
+    ports:
+      - 8081:8081
+    networks:
+      - apm-demo
+    depends_on:
+      apm-server:
+        condition: service_healthy
+  mock-user:
+    image: byrnedo/alpine-curl:0.1
+    networks:
+      - apm-demo
+    entrypoint:
+      - sh
+      - "-ec"
+      - |
+        while true ; do sleep 0.3; curl http://go-server:8081/user/calvin > /dev/null 2>&1; echo GET http://go-server:8081/user/calvin; done 
+    depends_on:
+      - go-server
+networks:
+  apm-demo:
